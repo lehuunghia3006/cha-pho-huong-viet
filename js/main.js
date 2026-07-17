@@ -94,7 +94,7 @@ function buildCardAction(dishId, qty) {
     return `
       <div class="qty-selector">
         <button class="qty-btn qty-minus" data-dish-id="${dishId}">−</button>
-        <span class="qty-value">${qty}</span>
+        <span class="qty-value">${qty % 1 === 0 ? qty : qty.toFixed(1)}</span>
         <button class="qty-btn qty-plus" data-dish-id="${dishId}">+</button>
       </div>
     `;
@@ -115,10 +115,10 @@ function updateCardAction(dishId) {
 function attachCardActionListeners() {
   // Use onclick to avoid duplicate listeners
   document.querySelectorAll('.btn-add').forEach(btn => {
-    btn.onclick = () => addToCart(btn.getAttribute('data-dish-id'), 1);
+    btn.onclick = () => addToCart(btn.getAttribute('data-dish-id'), QTY_STEP);
   });
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    btn.onclick = () => addToCart(btn.getAttribute('data-dish-id'), 1);
+    btn.onclick = () => addToCart(btn.getAttribute('data-dish-id'), QTY_STEP);
   });
   document.querySelectorAll('.qty-minus').forEach(btn => {
     btn.onclick = () => removeFromCart(btn.getAttribute('data-dish-id'));
@@ -126,10 +126,12 @@ function attachCardActionListeners() {
 }
 
 // ===== CART MANAGEMENT =====
+const QTY_STEP = 0.5;
+
 function addToCart(dishId, qty) {
   const existing = cart.find(c => c.id === dishId);
   if (existing) {
-    existing.quantity += qty;
+    existing.quantity = Math.round((existing.quantity + qty) * 10) / 10;
   } else {
     cart.push({ id: dishId, quantity: qty });
   }
@@ -140,7 +142,7 @@ function addToCart(dishId, qty) {
 function removeFromCart(dishId) {
   const existing = cart.find(c => c.id === dishId);
   if (existing) {
-    existing.quantity -= 1;
+    existing.quantity = Math.round((existing.quantity - QTY_STEP) * 10) / 10;
     if (existing.quantity <= 0) {
       cart = cart.filter(c => c.id !== dishId);
     }
@@ -152,7 +154,7 @@ function removeFromCart(dishId) {
 function updateCartQty(dishId, qty) {
   const existing = cart.find(c => c.id === dishId);
   if (existing) {
-    existing.quantity = Math.max(1, qty);
+    existing.quantity = Math.max(QTY_STEP, Math.round(qty * 10) / 10);
   }
   updateCardAction(dishId);
   renderCart();
@@ -194,6 +196,7 @@ function renderCart() {
   cartItems.innerHTML = cart.map(item => {
     const dish = menuDishes.find(d => d.id === item.id);
     if (!dish) return '';
+    const qtyDisplay = item.quantity % 1 === 0 ? item.quantity : item.quantity.toFixed(1);
     const lineTotal = (dish.price * item.quantity).toLocaleString('vi-VN');
     return `
       <div class="cart-item">
@@ -201,15 +204,15 @@ function renderCart() {
           <span class="cart-item-emoji">${dish.emoji}</span>
           <div>
             <div class="cart-item-name">${escapeHtml(dish.name)}</div>
-            <div class="cart-item-price">${dish.price.toLocaleString('vi-VN')}đ x ${item.quantity}</div>
+            <div class="cart-item-price">${dish.price.toLocaleString('vi-VN')}đ × ${qtyDisplay}</div>
           </div>
         </div>
         <div class="cart-item-right">
           <div class="cart-item-total">${lineTotal}đ</div>
           <div class="cart-qty-selector">
             <button class="cart-qty-btn" onclick="removeFromCart('${dish.id}')">−</button>
-            <span class="cart-qty-value">${item.quantity}</span>
-            <button class="cart-qty-btn" onclick="addToCart('${dish.id}', 1)">+</button>
+            <span class="cart-qty-value">${qtyDisplay}</span>
+            <button class="cart-qty-btn" onclick="addToCart('${dish.id}', ${QTY_STEP})">+</button>
           </div>
           <button class="cart-item-remove" onclick="removeFromCartById('${dish.id}')" title="Xóa">×</button>
         </div>
@@ -239,6 +242,7 @@ function renderOrderSummary() {
   summaryItems.innerHTML = cart.map(item => {
     const dish = menuDishes.find(d => d.id === item.id);
     if (!dish) return '';
+    const qtyDisplay = item.quantity % 1 === 0 ? item.quantity : item.quantity.toFixed(1);
     const lineTotal = (dish.price * item.quantity).toLocaleString('vi-VN');
     return `
       <div class="cart-item">
@@ -246,7 +250,7 @@ function renderOrderSummary() {
           <span class="cart-item-emoji">${dish.emoji}</span>
           <div>
             <div class="cart-item-name">${escapeHtml(dish.name)}</div>
-            <div class="cart-item-price">${dish.price.toLocaleString('vi-VN')}đ × ${item.quantity}</div>
+            <div class="cart-item-price">${dish.price.toLocaleString('vi-VN')}đ × ${qtyDisplay}</div>
           </div>
         </div>
         <div class="cart-item-total">${lineTotal}đ</div>
