@@ -172,8 +172,24 @@ function renderOrders(orders) {
 }
 
 function createOrderRow(order, full) {
-  const dish = allDishes.find(d => d.id === order.dish);
-  const dishName = dish ? dish.name : order.dish || '—';
+  // Handle both old format (single dish) and new format (items array)
+  let itemsText = '—';
+  let totalQty = 0;
+
+  if (order.items && order.items.length > 0) {
+    const itemNames = order.items.map(item => {
+      const dish = allDishes.find(d => d.id === item.dish);
+      const name = dish ? dish.name : item.dish;
+      totalQty += item.quantity || 1;
+      return `${name} x${item.quantity || 1}`;
+    });
+    itemsText = itemNames.join(', ');
+  } else if (order.dish) {
+    const dish = allDishes.find(d => d.id === order.dish);
+    itemsText = dish ? dish.name : order.dish;
+    totalQty = order.quantity || 1;
+  }
+
   const time = new Date(order.createdAt).toLocaleString('vi-VN', {
     day: '2-digit',
     month: '2-digit',
@@ -203,8 +219,8 @@ function createOrderRow(order, full) {
   }
 
   row += `
-      <td>${dishName}</td>
-      <td>${order.quantity || 1}</td>
+      <td title="${escapeHtml(itemsText)}">${itemsText.length > 30 ? itemsText.substring(0, 30) + '...' : itemsText}</td>
+      <td>${totalQty}</td>
   `;
 
   if (full) {

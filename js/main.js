@@ -78,20 +78,23 @@ function renderMenuCards() {
   attachAddButtonListeners();
 }
 
-// Render dish select in order form
-function renderDishSelect() {
-  const select = document.getElementById('dishSelect');
-  if (!select) return;
-
-  // Keep the first option
-  select.innerHTML = '<option value="">-- Chọn món --</option>';
-
+// Render dish select options (used by all selects in the form)
+function renderDishSelectOptions(selectElement) {
+  if (!selectElement) return;
+  selectElement.innerHTML = '<option value="">-- Chọn món --</option>';
   menuDishes.forEach(dish => {
     const priceFormatted = dish.price.toLocaleString('vi-VN') + 'đ';
     const option = document.createElement('option');
     option.value = dish.id;
     option.textContent = `${dish.name} - ${priceFormatted}`;
-    select.appendChild(option);
+    selectElement.appendChild(option);
+  });
+}
+
+// Render all dish selects in the order form
+function renderDishSelect() {
+  document.querySelectorAll('.dish-select').forEach(sel => {
+    renderDishSelectOptions(sel);
   });
 }
 
@@ -200,13 +203,27 @@ contactForm.addEventListener('submit', async (e) => {
   const name = contactForm.querySelector('input[name="name"]').value;
   const phone = contactForm.querySelector('input[name="phone"]').value;
   const email = contactForm.querySelector('input[name="email"]').value;
-  const dish = contactForm.querySelector('select[name="dish"]').value;
-  const quantity = contactForm.querySelector('input[name="quantity"]')?.value || 1;
   const note = contactForm.querySelector('textarea[name="note"]').value;
+
+  // Collect all order items
+  const items = [];
+  const orderItemEls = document.querySelectorAll('#orderItems .order-item');
+  orderItemEls.forEach(item => {
+    const dishId = item.querySelector('.dish-select').value;
+    const qty = parseInt(item.querySelector('.qty-input').value) || 1;
+    if (dishId) {
+      items.push({ dish: dishId, quantity: qty });
+    }
+  });
 
   // Simple validation
   if (!name || !phone) {
     alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+    return;
+  }
+
+  if (items.length === 0) {
+    alert('Vui lòng chọn ít nhất 1 món!');
     return;
   }
 
@@ -220,7 +237,7 @@ contactForm.addEventListener('submit', async (e) => {
     const response = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone, email, dish, quantity, note })
+      body: JSON.stringify({ name, phone, email, items, note })
     });
 
     const data = await response.json();
@@ -229,6 +246,12 @@ contactForm.addEventListener('submit', async (e) => {
       btn.textContent = '✓ Đặt hàng thành công!';
       btn.style.background = 'linear-gradient(135deg, #2d6a4f, #40916c)';
       contactForm.reset();
+      // Reset order items to 1
+      const itemsContainer = document.getElementById('orderItems');
+      const allItems = itemsContainer.querySelectorAll('.order-item');
+      allItems.forEach((item, i) => { if (i > 0) item.remove(); });
+      const firstQty = itemsContainer.querySelector('.qty-input');
+      if (firstQty) firstQty.value = 1;
     } else {
       btn.textContent = '✗ Lỗi: ' + (data.error || 'Thử lại');
       btn.style.background = 'linear-gradient(135deg, #e76f51, #f4a261)';
@@ -297,10 +320,26 @@ function attachAddButtonListeners() {
     btn.addEventListener('click', () => {
       const dishId = btn.getAttribute('data-dish-id');
       if (dishId) {
-        // Scroll to order form and select the dish
-        const dishSelect = document.getElementById('dishSelect');
-        if (dishSelect) {
-          dishSelect.value = dishId;
+        // Find first empty select or add new item
+        const selects = document.querySelectorAll('#orderItems .dish-select');
+        let targetSelect = null;
+
+        for (const sel of selects) {
+          if (!sel.value) {
+            targetSelect = sel;
+            break;
+          }
+        }
+
+        // If all selects are filled, add a new item
+        if (!targetSelect) {
+          addOrderItem();
+          const newSelects = document.querySelectorAll('#orderItems .dish-select');
+          targetSelect = newSelects[newSelects.length - 1];
+        }
+
+        if (targetSelect) {
+          targetSelect.value = dishId;
           document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
         }
       }
@@ -320,6 +359,49 @@ function attachAddButtonListeners() {
 
 // Initial attachment
 attachAddButtonListeners();
+
+// ===== ORDER ITEMS MANAGEMENT =====
+let orderItemIndex = 1;
+
+function addOrderItem() {
+  const container = document.getElementById('orderItems');
+  const index = orderItemIndex++;
+
+  const itemHtml = `
+    <div class="order-item" data-index="${index}">
+      <select name="dish_${index}" class="dish-select" required>
+        <option value="">-- Chọn món --</option>
+      </select>
+      <input type="number" name="qty_${index}" class="qty-input" value="1" min="1" max="100" placeholder="SL">
+      <button type="button" class="btn-remove-item" title="Xóa">&times;</button>
+    </div>
+  `;
+
+  container.insertAdjacentHTML('beforeend', itemHtml);
+
+  // Populate the new select with dishes
+  const newItem = container.querySelector(`[data-index="${index}"]`);
+  const newSelect = newItem.querySelector('.dish-select');
+  renderDishSelectOptions(newSelect);
+
+  // Attach remove listener
+  newItem.querySelector('.btn-remove-item').addEventListener('click', () => {
+    if (document.querySelectorAll('#orderItems .order-item').length > 1) {
+      newItem.remove();
+    }
+  });
+}
+
+// Add item button
+document.getElementById('btnAddItem').addEventListener('click', addOrderItem);
+
+// Initial remove button for first item
+document.querySelector('#orderItems .btn-remove-item').addEventListener('click', function () {
+  // Don't remove the last item
+  if (document.querySelectorAll('#orderItems .order-item').length > 1) {
+    this.closest('.order-item').remove();
+  }
+});
 
 // ===== PARALLAX EFFECT ON HERO =====
 window.addEventListener('scroll', () => {

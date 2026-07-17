@@ -77,20 +77,20 @@ async function sendOrderEmail(order) {
     return;
   }
 
-  const dishNames = {
-    'pho-bo-db': 'Phở Bò Đặc Biệt - 55.000đ',
-    'pho-ga': 'Phở Gà Truyền Thống - 50.000đ',
-    'pho-bo-tc': 'Phở Bò Tái Chín - 50.000đ',
-    'cha-gio': 'Chả Giò Sốt Đậu - 45.000đ',
-    'cha-lua': 'Chả Lụa Nghệ An - 40.000đ',
-    'cha-muc': 'Chả Mực Hạ Long - 60.000đ',
-    'goi-cuon': 'Gỏi Cuốn Tôm Thịt - 35.000đ',
-    'nem-chua': 'Nem Chua Rán - 40.000đ',
-    'tra-da': 'Trà Đá - 10.000đ',
-    'che-dau': 'Chè Đậu Xanh - 20.000đ'
-  };
+  const dishes = readDishes();
 
-  const dishName = dishNames[order.dish] || order.dish || 'Không xác định';
+  // Build items list for email
+  let itemsHtml = '';
+  if (order.items && order.items.length > 0) {
+    itemsHtml = order.items.map(item => {
+      const dish = dishes.find(d => d.id === item.dish);
+      const name = dish ? dish.name : item.dish;
+      return `<tr>
+        <td style="padding: 8px 10px; border-bottom: 1px solid #eee;">${name}</td>
+        <td style="padding: 8px 10px; border-bottom: 1px solid #eee; text-align:center;">${item.quantity}</td>
+      </tr>`;
+    }).join('');
+  }
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
@@ -113,14 +113,18 @@ async function sendOrderEmail(order) {
             <td style="padding: 10px; font-weight: bold;">Email:</td>
             <td style="padding: 10px;">${order.email || 'Không có'}</td>
           </tr>
-          <tr>
-            <td style="padding: 10px; font-weight: bold;">Món đặt:</td>
-            <td style="padding: 10px;">${dishName}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; font-weight: bold;">Số lượng:</td>
-            <td style="padding: 10px;">${order.quantity || 1}</td>
-          </tr>
+        </table>
+        <h3 style="color: #2d6a4f; margin-top: 20px;">Chi tiết đơn hàng:</h3>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #eee;">
+          <thead>
+            <tr style="background: #f8f9fa;">
+              <th style="padding: 8px 10px; text-align: left;">Món</th>
+              <th style="padding: 8px 10px; text-align: center;">SL</th>
+            </tr>
+          </thead>
+          <tbody>${itemsHtml}</tbody>
+        </table>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
           <tr>
             <td style="padding: 10px; font-weight: bold;">Ghi chú:</td>
             <td style="padding: 10px;">${order.note || 'Không có'}</td>
@@ -148,11 +152,26 @@ async function sendOrderEmail(order) {
 
 // POST /api/orders - Tạo đơn hàng mới
 app.post('/api/orders', (req, res) => {
-  const { name, phone, email, dish, quantity, note } = req.body;
+  const { name, phone, email, items, dish, quantity, note } = req.body;
 
   // Validate
   if (!name || !phone) {
     return res.status(400).json({ error: 'Vui lòng điền tên và số điện thoại' });
+  }
+
+  // Handle both old format (single dish) and new format (items array)
+  let orderItems = [];
+  if (items && Array.isArray(items) && items.length > 0) {
+    orderItems = items.map(item => ({
+      dish: item.dish || '',
+      quantity: parseInt(item.quantity) || 1
+    }));
+  } else if (dish) {
+    orderItems = [{ dish, quantity: parseInt(quantity) || 1 }];
+  }
+
+  if (orderItems.length === 0) {
+    return res.status(400).json({ error: 'Vui lòng chọn ít nhất 1 món' });
   }
 
   const orders = readOrders();
@@ -161,8 +180,7 @@ app.post('/api/orders', (req, res) => {
     name,
     phone,
     email: email || '',
-    dish: dish || '',
-    quantity: parseInt(quantity) || 1,
+    items: orderItems,
     note: note || '',
     status: 'new', // new, processing, completed, cancelled
     createdAt: new Date().toISOString()
