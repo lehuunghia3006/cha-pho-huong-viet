@@ -706,27 +706,6 @@ nav a.active {
   margin-left: 8px;
 }
 
-.btn-add {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(45, 106, 79, 0.08);
-  color: var(--primary);
-  border: none;
-  cursor: pointer;
-  font-size: 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-}
-
-.btn-add:hover {
-  background: var(--primary);
-  color: white;
-  transform: rotate(90deg);
-}
-
 /* ===== CARD ACTION (Qty Selector on Card) ===== */
 .card-action {
   display: flex;
