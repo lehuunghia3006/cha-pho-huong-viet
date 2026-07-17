@@ -65,7 +65,7 @@ function renderMenuCards() {
     const qty = cartItem ? cartItem.quantity : 0;
 
     return `
-      <div class="menu-card fade-in" data-category="${dish.category}" data-dish-id="${dish.id}">
+      <div class="menu-card fade-in visible" data-category="${dish.category}" data-dish-id="${dish.id}">
         <div class="menu-card-image">
           ${imageHtml}
           ${dish.badge ? `<div class="menu-card-badge">${dish.badge}</div>` : ''}
@@ -76,15 +76,7 @@ function renderMenuCards() {
           <div class="menu-card-footer">
             <div class="price">${priceFormatted}</div>
             <div class="card-action" data-dish-id="${dish.id}">
-              ${qty > 0 ? `
-                <div class="qty-selector">
-                  <button class="qty-btn qty-minus" data-dish-id="${dish.id}">−</button>
-                  <span class="qty-value">${qty}</span>
-                  <button class="qty-btn qty-plus" data-dish-id="${dish.id}">+</button>
-                </div>
-              ` : `
-                <button class="btn-add" data-dish-id="${dish.id}">+ Thêm</button>
-              `}
+              ${buildCardAction(dish.id, qty)}
             </div>
           </div>
         </div>
@@ -92,38 +84,44 @@ function renderMenuCards() {
     `;
   }).join('');
 
-  // Re-attach scroll animations
-  document.querySelectorAll('.menu-card.fade-in').forEach(el => {
-    observer.observe(el);
-  });
-
   // Attach card action listeners
   attachCardActionListeners();
 }
 
+// Build only the action button HTML for a dish
+function buildCardAction(dishId, qty) {
+  if (qty > 0) {
+    return `
+      <div class="qty-selector">
+        <button class="qty-btn qty-minus" data-dish-id="${dishId}">−</button>
+        <span class="qty-value">${qty}</span>
+        <button class="qty-btn qty-plus" data-dish-id="${dishId}">+</button>
+      </div>
+    `;
+  }
+  return `<button class="btn-add" data-dish-id="${dishId}">+ Thêm</button>`;
+}
+
+// Update ONLY the action button on a single card (no full re-render)
+function updateCardAction(dishId) {
+  const actionEl = document.querySelector(`.card-action[data-dish-id="${dishId}"]`);
+  if (!actionEl) return;
+  const cartItem = cart.find(c => c.id === dishId);
+  const qty = cartItem ? cartItem.quantity : 0;
+  actionEl.innerHTML = buildCardAction(dishId, qty);
+  attachCardActionListeners();
+}
+
 function attachCardActionListeners() {
-  // Add button
+  // Use onclick to avoid duplicate listeners
   document.querySelectorAll('.btn-add').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const dishId = btn.getAttribute('data-dish-id');
-      addToCart(dishId, 1);
-    });
+    btn.onclick = () => addToCart(btn.getAttribute('data-dish-id'), 1);
   });
-
-  // Plus button
   document.querySelectorAll('.qty-plus').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const dishId = btn.getAttribute('data-dish-id');
-      addToCart(dishId, 1);
-    });
+    btn.onclick = () => addToCart(btn.getAttribute('data-dish-id'), 1);
   });
-
-  // Minus button
   document.querySelectorAll('.qty-minus').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const dishId = btn.getAttribute('data-dish-id');
-      removeFromCart(dishId);
-    });
+    btn.onclick = () => removeFromCart(btn.getAttribute('data-dish-id'));
   });
 }
 
@@ -135,7 +133,7 @@ function addToCart(dishId, qty) {
   } else {
     cart.push({ id: dishId, quantity: qty });
   }
-  renderMenuCards();
+  updateCardAction(dishId);
   renderCart();
 }
 
@@ -147,7 +145,7 @@ function removeFromCart(dishId) {
       cart = cart.filter(c => c.id !== dishId);
     }
   }
-  renderMenuCards();
+  updateCardAction(dishId);
   renderCart();
 }
 
@@ -156,13 +154,13 @@ function updateCartQty(dishId, qty) {
   if (existing) {
     existing.quantity = Math.max(1, qty);
   }
-  renderMenuCards();
+  updateCardAction(dishId);
   renderCart();
 }
 
 function removeFromCartById(dishId) {
   cart = cart.filter(c => c.id !== dishId);
-  renderMenuCards();
+  updateCardAction(dishId);
   renderCart();
 }
 
@@ -395,8 +393,13 @@ contactForm.addEventListener('submit', async (e) => {
       btn.textContent = '✓ Đặt hàng thành công!';
       btn.style.background = 'linear-gradient(135deg, #2d6a4f, #40916c)';
       contactForm.reset();
+      // Reset all cards back to "+ Thêm" and clear cart
       cart = [];
-      renderMenuCards();
+      document.querySelectorAll('.card-action').forEach(el => {
+        const id = el.getAttribute('data-dish-id');
+        el.innerHTML = buildCardAction(id, 0);
+      });
+      attachCardActionListeners();
       renderCart();
     } else {
       btn.textContent = '✗ Lỗi: ' + (data.error || 'Thử lại');
