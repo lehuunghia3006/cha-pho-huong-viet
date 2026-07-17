@@ -1,7 +1,7 @@
 {
   "name": "cha-pho-huong-viet",
   "version": "1.0.0",
-  "description": "Website bán Chả & Phở Hương Việt",
+  "description": "Website bán Chả & Phở Tín Bé",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

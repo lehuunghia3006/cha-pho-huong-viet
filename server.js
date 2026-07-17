@@ -98,7 +98,7 @@ async function sendOrderEmail(order) {
     subject: `🍜 Đơn hàng mới từ ${order.name}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2d6a4f;">🍜 Đơn hàng mới từ Chả Phở Hương Việt</h2>
+        <h2 style="color: #2d6a4f;">🍜 Đơn hàng mới từ Chả Phở Tín Bé</h2>
         <hr style="border: 1px solid #e0e0e0;">
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
@@ -131,7 +131,7 @@ async function sendOrderEmail(order) {
           </tr>
         </table>
         <hr style="border: 1px solid #e0e0e0;">
-        <p style="color: #666; font-size: 12px;">Đây là email tự động từ hệ thống Chả Phở Hương Việt</p>
+        <p style="color: #666; font-size: 12px;">Đây là email tự động từ hệ thống Chả Phở Tín Bé</p>
       </div>
     `
   };
@@ -393,7 +393,7 @@ app.get('/admin', (req, res) => {
 app.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════╗
-  ║   🍜 Chả Phở Hương Việt - Server       ║
+  ║   🍜 Chả Phở Tín Bé - Server       ║
   ║                                          ║
   ║   Website:  http://localhost:${PORT}        ║
   ║   Admin:    http://localhost:${PORT}/admin  ║
