@@ -20,6 +20,9 @@ const CATEGORY_LABELS = {
   'banh': '🏕️ Bánh'
 };
 
+// ===== CART STATE =====
+let cart = [];
+
 // Load dishes from API
 async function loadMenuDishes() {
   try {
@@ -29,14 +32,21 @@ async function loadMenuDishes() {
     if (data.success) {
       menuDishes = data.dishes;
       renderMenuCards();
-      renderDishSelect();
+      renderCart();
     }
   } catch (error) {
     console.error('Lỗi tải món ăn:', error);
   }
 }
 
-// Render menu cards
+// Escape HTML helper
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ===== MENU CARDS =====
 function renderMenuCards() {
   const grid = document.getElementById('menuGrid');
   if (!grid) return;
@@ -51,8 +61,11 @@ function renderMenuCards() {
     const imageHtml = dish.image
       ? `<img src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.parentElement.innerHTML='${dish.emoji}'">`
       : dish.emoji;
+    const cartItem = cart.find(c => c.id === dish.id);
+    const qty = cartItem ? cartItem.quantity : 0;
+
     return `
-      <div class="menu-card fade-in" data-category="${dish.category}">
+      <div class="menu-card fade-in" data-category="${dish.category}" data-dish-id="${dish.id}">
         <div class="menu-card-image">
           ${imageHtml}
           ${dish.badge ? `<div class="menu-card-badge">${dish.badge}</div>` : ''}
@@ -62,7 +75,17 @@ function renderMenuCards() {
           <p>${escapeHtml(dish.description)}</p>
           <div class="menu-card-footer">
             <div class="price">${priceFormatted}</div>
-            <button class="btn-add" data-dish-id="${dish.id}">+</button>
+            <div class="card-action" data-dish-id="${dish.id}">
+              ${qty > 0 ? `
+                <div class="qty-selector">
+                  <button class="qty-btn qty-minus" data-dish-id="${dish.id}">−</button>
+                  <span class="qty-value">${qty}</span>
+                  <button class="qty-btn qty-plus" data-dish-id="${dish.id}">+</button>
+                </div>
+              ` : `
+                <button class="btn-add" data-dish-id="${dish.id}">+ Thêm</button>
+              `}
+            </div>
           </div>
         </div>
       </div>
@@ -74,35 +97,166 @@ function renderMenuCards() {
     observer.observe(el);
   });
 
-  // Re-attach add button listeners
-  attachAddButtonListeners();
+  // Attach card action listeners
+  attachCardActionListeners();
 }
 
-// Render dish select options (used by all selects in the form)
-function renderDishSelectOptions(selectElement) {
-  if (!selectElement) return;
-  selectElement.innerHTML = '<option value="">-- Chọn món --</option>';
-  menuDishes.forEach(dish => {
-    const priceFormatted = dish.price.toLocaleString('vi-VN') + 'đ';
-    const option = document.createElement('option');
-    option.value = dish.id;
-    option.textContent = `${dish.name} - ${priceFormatted}`;
-    selectElement.appendChild(option);
+function attachCardActionListeners() {
+  // Add button
+  document.querySelectorAll('.btn-add').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dishId = btn.getAttribute('data-dish-id');
+      addToCart(dishId, 1);
+    });
+  });
+
+  // Plus button
+  document.querySelectorAll('.qty-plus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dishId = btn.getAttribute('data-dish-id');
+      addToCart(dishId, 1);
+    });
+  });
+
+  // Minus button
+  document.querySelectorAll('.qty-minus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dishId = btn.getAttribute('data-dish-id');
+      removeFromCart(dishId);
+    });
   });
 }
 
-// Render all dish selects in the order form
-function renderDishSelect() {
-  document.querySelectorAll('.dish-select').forEach(sel => {
-    renderDishSelectOptions(sel);
-  });
+// ===== CART MANAGEMENT =====
+function addToCart(dishId, qty) {
+  const existing = cart.find(c => c.id === dishId);
+  if (existing) {
+    existing.quantity += qty;
+  } else {
+    cart.push({ id: dishId, quantity: qty });
+  }
+  renderMenuCards();
+  renderCart();
 }
 
-// Escape HTML helper
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+function removeFromCart(dishId) {
+  const existing = cart.find(c => c.id === dishId);
+  if (existing) {
+    existing.quantity -= 1;
+    if (existing.quantity <= 0) {
+      cart = cart.filter(c => c.id !== dishId);
+    }
+  }
+  renderMenuCards();
+  renderCart();
+}
+
+function updateCartQty(dishId, qty) {
+  const existing = cart.find(c => c.id === dishId);
+  if (existing) {
+    existing.quantity = Math.max(1, qty);
+  }
+  renderMenuCards();
+  renderCart();
+}
+
+function removeFromCartById(dishId) {
+  cart = cart.filter(c => c.id !== dishId);
+  renderMenuCards();
+  renderCart();
+}
+
+function getCartTotal() {
+  return cart.reduce((sum, item) => {
+    const dish = menuDishes.find(d => d.id === item.id);
+    return sum + (dish ? dish.price * item.quantity : 0);
+  }, 0);
+}
+
+// ===== RENDER CART =====
+function renderCart() {
+  const cartSection = document.getElementById('cartSection');
+  const cartItems = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+  const cartTotal = document.getElementById('cartTotal');
+  const btnCheckout = document.getElementById('btnCheckout');
+
+  if (!cartSection) return;
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  if (cartCount) cartCount.textContent = totalItems;
+
+  if (cart.length === 0) {
+    cartSection.style.display = 'none';
+    return;
+  }
+
+  cartSection.style.display = 'block';
+
+  cartItems.innerHTML = cart.map(item => {
+    const dish = menuDishes.find(d => d.id === item.id);
+    if (!dish) return '';
+    const lineTotal = (dish.price * item.quantity).toLocaleString('vi-VN');
+    return `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <span class="cart-item-emoji">${dish.emoji}</span>
+          <div>
+            <div class="cart-item-name">${escapeHtml(dish.name)}</div>
+            <div class="cart-item-price">${dish.price.toLocaleString('vi-VN')}đ x ${item.quantity}</div>
+          </div>
+        </div>
+        <div class="cart-item-right">
+          <div class="cart-item-total">${lineTotal}đ</div>
+          <div class="cart-qty-selector">
+            <button class="cart-qty-btn" onclick="removeFromCart('${dish.id}')">−</button>
+            <span class="cart-qty-value">${item.quantity}</span>
+            <button class="cart-qty-btn" onclick="addToCart('${dish.id}', 1)">+</button>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCartById('${dish.id}')" title="Xóa">×</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const total = getCartTotal().toLocaleString('vi-VN');
+  if (cartTotal) cartTotal.textContent = total + 'đ';
+  if (btnCheckout) btnCheckout.style.display = 'block';
+
+  // Update order summary
+  renderOrderSummary();
+}
+
+function renderOrderSummary() {
+  const summaryItems = document.getElementById('orderSummaryItems');
+  const summaryTotal = document.getElementById('orderSummaryTotal');
+  if (!summaryItems) return;
+
+  if (cart.length === 0) {
+    summaryItems.innerHTML = '<p class="empty-cart-msg">Chưa có món nào. Hãy chọn món từ thực đơn!</p>';
+    if (summaryTotal) summaryTotal.textContent = '0đ';
+    return;
+  }
+
+  summaryItems.innerHTML = cart.map(item => {
+    const dish = menuDishes.find(d => d.id === item.id);
+    if (!dish) return '';
+    const lineTotal = (dish.price * item.quantity).toLocaleString('vi-VN');
+    return `
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <span class="cart-item-emoji">${dish.emoji}</span>
+          <div>
+            <div class="cart-item-name">${escapeHtml(dish.name)}</div>
+            <div class="cart-item-price">${dish.price.toLocaleString('vi-VN')}đ × ${item.quantity}</div>
+          </div>
+        </div>
+        <div class="cart-item-total">${lineTotal}đ</div>
+      </div>
+    `;
+  }).join('');
+
+  if (summaryTotal) summaryTotal.textContent = getCartTotal().toLocaleString('vi-VN') + 'đ';
 }
 
 // ===== MOBILE NAVIGATION =====
@@ -205,16 +359,11 @@ contactForm.addEventListener('submit', async (e) => {
   const email = contactForm.querySelector('input[name="email"]').value;
   const note = contactForm.querySelector('textarea[name="note"]').value;
 
-  // Collect all order items
-  const items = [];
-  const orderItemEls = document.querySelectorAll('#orderItems .order-item');
-  orderItemEls.forEach(item => {
-    const dishId = item.querySelector('.dish-select').value;
-    const qty = parseInt(item.querySelector('.qty-input').value) || 1;
-    if (dishId) {
-      items.push({ dish: dishId, quantity: qty });
-    }
-  });
+  // Collect items from cart
+  const items = cart.map(item => ({
+    dish: item.id,
+    quantity: item.quantity
+  }));
 
   // Simple validation
   if (!name || !phone) {
@@ -246,12 +395,9 @@ contactForm.addEventListener('submit', async (e) => {
       btn.textContent = '✓ Đặt hàng thành công!';
       btn.style.background = 'linear-gradient(135deg, #2d6a4f, #40916c)';
       contactForm.reset();
-      // Reset order items to 1
-      const itemsContainer = document.getElementById('orderItems');
-      const allItems = itemsContainer.querySelectorAll('.order-item');
-      allItems.forEach((item, i) => { if (i > 0) item.remove(); });
-      const firstQty = itemsContainer.querySelector('.qty-input');
-      if (firstQty) firstQty.value = 1;
+      cart = [];
+      renderMenuCards();
+      renderCart();
     } else {
       btn.textContent = '✗ Lỗi: ' + (data.error || 'Thử lại');
       btn.style.background = 'linear-gradient(135deg, #e76f51, #f4a261)';
@@ -266,6 +412,11 @@ contactForm.addEventListener('submit', async (e) => {
     btn.style.background = '';
     btn.disabled = false;
   }, 3000);
+});
+
+// ===== CHECKOUT BUTTON =====
+document.getElementById('btnCheckout')?.addEventListener('click', () => {
+  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
 });
 
 // ===== SMOOTH SCROLL =====
@@ -312,95 +463,6 @@ const counterObserver = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.stat h3').forEach(counter => {
   counterObserver.observe(counter);
-});
-
-// ===== ADD TO CART ANIMATION =====
-function attachAddButtonListeners() {
-  document.querySelectorAll('.btn-add').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const dishId = btn.getAttribute('data-dish-id');
-      if (dishId) {
-        // Find first empty select or add new item
-        const selects = document.querySelectorAll('#orderItems .dish-select');
-        let targetSelect = null;
-
-        for (const sel of selects) {
-          if (!sel.value) {
-            targetSelect = sel;
-            break;
-          }
-        }
-
-        // If all selects are filled, add a new item
-        if (!targetSelect) {
-          addOrderItem();
-          const newSelects = document.querySelectorAll('#orderItems .dish-select');
-          targetSelect = newSelects[newSelects.length - 1];
-        }
-
-        if (targetSelect) {
-          targetSelect.value = dishId;
-          document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-        }
-      }
-
-      btn.style.background = 'var(--primary)';
-      btn.style.color = 'white';
-      btn.textContent = '✓';
-
-      setTimeout(() => {
-        btn.style.background = '';
-        btn.style.color = '';
-        btn.textContent = '+';
-      }, 1500);
-    });
-  });
-}
-
-// Initial attachment
-attachAddButtonListeners();
-
-// ===== ORDER ITEMS MANAGEMENT =====
-let orderItemIndex = 1;
-
-function addOrderItem() {
-  const container = document.getElementById('orderItems');
-  const index = orderItemIndex++;
-
-  const itemHtml = `
-    <div class="order-item" data-index="${index}">
-      <select name="dish_${index}" class="dish-select" required>
-        <option value="">-- Chọn món --</option>
-      </select>
-      <input type="number" name="qty_${index}" class="qty-input" value="1" min="1" max="100" placeholder="SL">
-      <button type="button" class="btn-remove-item" title="Xóa">&times;</button>
-    </div>
-  `;
-
-  container.insertAdjacentHTML('beforeend', itemHtml);
-
-  // Populate the new select with dishes
-  const newItem = container.querySelector(`[data-index="${index}"]`);
-  const newSelect = newItem.querySelector('.dish-select');
-  renderDishSelectOptions(newSelect);
-
-  // Attach remove listener
-  newItem.querySelector('.btn-remove-item').addEventListener('click', () => {
-    if (document.querySelectorAll('#orderItems .order-item').length > 1) {
-      newItem.remove();
-    }
-  });
-}
-
-// Add item button
-document.getElementById('btnAddItem').addEventListener('click', addOrderItem);
-
-// Initial remove button for first item
-document.querySelector('#orderItems .btn-remove-item').addEventListener('click', function () {
-  // Don't remove the last item
-  if (document.querySelectorAll('#orderItems .order-item').length > 1) {
-    this.closest('.order-item').remove();
-  }
 });
 
 // ===== PARALLAX EFFECT ON HERO =====

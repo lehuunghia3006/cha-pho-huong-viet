@@ -83,7 +83,7 @@
             </div>
           </div>
           <div class="floating-card">
-            <div class="icon orange">🥟</div>
+            <div class="icon orange">🥩</div>
             <div class="info">
               <h4>Chả lụa bò</h4>
               <p>280.000đ/ 1kg</p>
@@ -167,78 +167,92 @@
     </div>
   </section>
 
-  <!-- ===== CONTACT ===== -->
-  <section class="contact" id="contact">
+  <!-- ===== CART & ORDER ===== -->
+  <section class="cart-order-section" id="contact">
     <div class="container">
-      <div class="contact-info-cards fade-in-left">
-        <div class="section-title" style="text-align:left; margin-bottom:24px">
-          <h2>Liên Hệ Với Chúng Tôi</h2>
-          <div class="underline" style="margin:0"></div>
-        </div>
 
-        <!-- Google Maps -->
-        <div class="map-wrapper">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.5!2d107.0817754!3d16.8533602!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3140e954a8a83b3f%3A0x858450c85d94d51d!2zQ2jDoW0gUGjDoW4gVMOibSBCw6p!5e0!3m2!1svi!2s!4v1700000000000!5m2!1svi!2s"
-            width="100%"
-            height="300"
-            style="border:0; border-radius: 12px;"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-          </iframe>
+      <!-- Cart -->
+      <div class="cart-section" id="cartSection" style="display:none;">
+        <div class="section-title fade-in">
+          <h2>🛒 Giỏ hàng của bạn</h2>
+          <div class="underline"></div>
+          <p>Bạn đã chọn <strong id="cartCount">0</strong> món</p>
         </div>
-        <a href="https://maps.app.goo.gl/MADrwx6tjqUCGiXA6" target="_blank" class="map-link">📍 Xem trên Google Maps</a>
-
-        <div class="info-card">
-          <div class="icon">📞</div>
-          <div>
-            <h4>Hotline</h4>
-            <p>0942 586 323 - 0369 551 480</p>
+        <div class="cart-box fade-in">
+          <div class="cart-items" id="cartItems"></div>
+          <div class="cart-footer">
+            <div class="cart-total-row">
+              <span>Tổng cộng:</span>
+              <span class="cart-total-price" id="cartTotal">0đ</span>
+            </div>
+            <button class="btn-checkout" id="btnCheckout">📝 Tiếp tục đặt hàng</button>
           </div>
         </div>
       </div>
 
-      <div class="contact-form-wrapper fade-in-right">
-        <h3>📝 Đặt hàng / Liên hệ</h3>
-        <form id="contactForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label>Họ và tên *</label>
-              <input type="text" name="name" placeholder="Nguyễn Văn A" required>
-            </div>
-            <div class="form-group">
-              <label>Số điện thoại *</label>
-              <input type="tel" name="phone" placeholder="0901 234 567" required>
-            </div>
+      <!-- Order Form -->
+      <div class="order-form-section fade-in" id="orderFormSection">
+        <div class="section-title">
+          <h2>📝 Thông tin đặt hàng</h2>
+          <div class="underline"></div>
+          <p>Vui lòng điền thông tin để hoàn tất đơn hàng</p>
+        </div>
+        <div class="order-form-grid">
+          <!-- Contact Info -->
+          <div class="order-form-left">
+            <form id="contactForm" class="order-form-card">
+              <div class="form-group">
+                <label>Họ và tên *</label>
+                <input type="text" name="name" placeholder="Nguyễn Văn A" required>
+              </div>
+              <div class="form-group">
+                <label>Số điện thoại *</label>
+                <input type="tel" name="phone" placeholder="0901 234 567" required>
+              </div>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="email@example.com">
+              </div>
+              <div class="form-group">
+                <label>Ghi chú</label>
+                <textarea name="note" placeholder="Yêu cầu đặc biệt, giao hàng giờ nào..." rows="3"></textarea>
+              </div>
+              <button type="submit" class="btn-submit">✅ Xác nhận đặt hàng</button>
+            </form>
           </div>
 
-          <!-- Danh sách món đặt -->
-          <div class="form-group">
-            <label>Món muốn đặt</label>
-            <div class="order-items" id="orderItems">
-              <div class="order-item" data-index="0">
-                <select name="dish_0" class="dish-select" required>
-                  <option value="">-- Chọn món --</option>
-                </select>
-                <input type="number" name="qty_0" class="qty-input" value="1" min="1" max="100" placeholder="SL">
-                <button type="button" class="btn-remove-item" title="Xóa">&times;</button>
+          <!-- Order Summary -->
+          <div class="order-form-right">
+            <div class="order-summary-card" id="orderSummaryCard">
+              <h4>📦 Đơn hàng của bạn</h4>
+              <div class="order-summary-items" id="orderSummaryItems">
+                <p class="empty-cart-msg">Chưa có món nào. Hãy chọn món từ thực đơn!</p>
+              </div>
+              <div class="order-summary-total">
+                <span>Tổng cộng:</span>
+                <span id="orderSummaryTotal">0đ</span>
               </div>
             </div>
-            <button type="button" class="btn-add-item" id="btnAddItem">+ Thêm món khác</button>
-          </div>
 
-          <div class="form-group">
-            <label>Email</label>
-            <input type="email" name="email" placeholder="email@example.com">
+            <!-- Contact Info Cards -->
+            <div class="contact-mini-cards">
+              <div class="contact-mini-card">
+                <span>📍</span>
+                <a href="https://maps.app.goo.gl/MADrwx6tjqUCGiXA6" target="_blank">Xem bản đồ</a>
+              </div>
+              <div class="contact-mini-card">
+                <span>📞</span>
+                <a href="tel:0942586323">0942 586 323</a>
+              </div>
+              <div class="contact-mini-card">
+                <span>💬</span>
+                <a href="https://zalo.me/0942586323" target="_blank">Nhắn Zalo</a>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Ghi chú</label>
-            <textarea name="note" placeholder="Thêm số lượng, yêu cầu đặc biệt..."></textarea>
-          </div>
-          <button type="submit" class="btn-submit">Gửi đơn hàng</button>
-        </form>
+        </div>
       </div>
+
     </div>
   </section>
 
