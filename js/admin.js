@@ -415,11 +415,14 @@ function renderDishes() {
 function createDishCard(dish) {
   const priceFormatted = dish.price.toLocaleString('vi-VN') + 'đ';
   const categoryLabel = CATEGORY_LABELS[dish.category] || dish.category;
+  const imageHtml = dish.image
+    ? `<img src="${dish.image}" alt="${escapeHtml(dish.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" onerror="this.parentElement.innerHTML='${dish.emoji}'">`
+    : dish.emoji;
 
   return `
     <div class="dish-card ${dish.active ? '' : 'inactive'}" data-id="${dish.id}">
       <div class="dish-card-top">
-        <div class="dish-card-emoji">${dish.emoji}</div>
+        <div class="dish-card-emoji">${imageHtml}</div>
         <div class="dish-card-info">
           <h4>${escapeHtml(dish.name)}</h4>
           <div class="dish-category">${categoryLabel}</div>
@@ -513,6 +516,7 @@ function openAddDishModal() {
   dishForm.reset();
   document.getElementById('dishId').value = '';
   document.getElementById('dishEmoji').value = '🍽️';
+  document.getElementById('dishImage').value = '';
   document.getElementById('dishActive').value = 'true';
   dishModal.classList.add('active');
 }
@@ -528,6 +532,7 @@ function openEditDishModal(id) {
   document.getElementById('dishPrice').value = dish.price;
   document.getElementById('dishCategory').value = dish.category;
   document.getElementById('dishEmoji').value = dish.emoji;
+  document.getElementById('dishImage').value = dish.image || '';
   document.getElementById('dishDesc').value = dish.description;
   document.getElementById('dishBadge').value = dish.badge || '';
   document.getElementById('dishActive').value = dish.active.toString();
@@ -557,6 +562,7 @@ dishForm.addEventListener('submit', async (e) => {
     price: document.getElementById('dishPrice').value,
     category: document.getElementById('dishCategory').value,
     emoji: document.getElementById('dishEmoji').value || '🍽️',
+    image: document.getElementById('dishImage').value || '',
     description: document.getElementById('dishDesc').value,
     badge: document.getElementById('dishBadge').value,
     active: document.getElementById('dishActive').value === 'true'

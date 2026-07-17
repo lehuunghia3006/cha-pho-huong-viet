@@ -48,10 +48,13 @@ function renderMenuCards() {
 
   grid.innerHTML = menuDishes.map(dish => {
     const priceFormatted = dish.price.toLocaleString('vi-VN') + 'đ';
+    const imageHtml = dish.image
+      ? `<img src="${dish.image}" alt="${escapeHtml(dish.name)}" loading="lazy" onerror="this.parentElement.innerHTML='${dish.emoji}'">`
+      : dish.emoji;
     return `
       <div class="menu-card fade-in" data-category="${dish.category}">
         <div class="menu-card-image">
-          ${dish.emoji}
+          ${imageHtml}
           ${dish.badge ? `<div class="menu-card-badge">${dish.badge}</div>` : ''}
         </div>
         <div class="menu-card-body">

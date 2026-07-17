@@ -6,6 +6,7 @@
     "price": 6000,
     "category": "cha-gio",
     "emoji": "🥩",
+    "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -16,7 +17,8 @@
     "price": 160000,
     "category": "cha-gio",
     "emoji": "🥩",
-    "badge": "Bán chạy",
+    "image": "https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&h=300&fit=crop",
+    "badge": "",
     "active": true
   },
   {
@@ -26,6 +28,7 @@
     "price": 280000,
     "category": "cha-gio",
     "emoji": "🥩",
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
     "badge": "Bán chạy",
     "active": true
   },
@@ -36,6 +39,7 @@
     "price": 140000,
     "category": "cha-gio",
     "emoji": "🥩",
+    "image": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -46,6 +50,7 @@
     "price": 160000,
     "category": "cha-da",
     "emoji": "🌶️",
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop",
     "badge": "Mới",
     "active": true
   },
@@ -56,6 +61,7 @@
     "price": 110000,
     "category": "cha-da",
     "emoji": "🌶️",
+    "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -66,6 +72,7 @@
     "price": 150000,
     "category": "cha-da",
     "emoji": "🌶️",
+    "image": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -76,6 +83,7 @@
     "price": 100000,
     "category": "xuc-xich",
     "emoji": "🌭",
+    "image": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -86,6 +94,7 @@
     "price": 90000,
     "category": "xuc-xich",
     "emoji": "🌭",
+    "image": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -96,6 +105,7 @@
     "price": 90000,
     "category": "xuc-xich",
     "emoji": "🌭",
+    "image": "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -106,6 +116,7 @@
     "price": 6000,
     "category": "nuong",
     "emoji": "🔥",
+    "image": "https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -116,6 +127,7 @@
     "price": 160000,
     "category": "nuong",
     "emoji": "🔥",
+    "image": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -126,6 +138,7 @@
     "price": 15000,
     "category": "pho",
     "emoji": "🍜",
+    "image": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -136,6 +149,7 @@
     "price": 15000,
     "category": "pho",
     "emoji": "🍜",
+    "image": "https://images.unsplash.com/photo-1555126634-323283e090fa?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -146,6 +160,7 @@
     "price": 15000,
     "category": "pho",
     "emoji": "🍜",
+    "image": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -156,6 +171,7 @@
     "price": 15000,
     "category": "pho",
     "emoji": "🍜",
+    "image": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -166,6 +182,7 @@
     "price": 14000,
     "category": "pho",
     "emoji": "🍜",
+    "image": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -176,6 +193,7 @@
     "price": 40000,
     "category": "banh",
     "emoji": "🏕️",
+    "image": "https://images.unsplash.com/photo-1563822249366-3efb23b8e0c9?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -186,6 +204,7 @@
     "price": 40000,
     "category": "banh",
     "emoji": "🏕️",
+    "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&h=300&fit=crop",
     "badge": "",
     "active": true
   },
@@ -196,6 +215,7 @@
     "price": 2000,
     "category": "banh",
     "emoji": "🏕️",
+    "image": "https://images.unsplash.com/photo-1563822249366-3efb23b8e0c9?w=400&h=300&fit=crop",
     "badge": "Giá rẻ",
     "active": true
   }
