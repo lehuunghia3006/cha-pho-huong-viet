@@ -1,0 +1,202 @@
+[
+  {
+    "id": "cha-the",
+    "name": "Chả thẻ",
+    "description": "Chả thẻ truyền thống, thơm ngon, 6k/1 cái",
+    "price": 6000,
+    "category": "cha-gio",
+    "emoji": "🥩",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "cha-gio-lua-heo",
+    "name": "Chả giò lụa heo",
+    "description": "Chả giò lụa heo tươi ngon, 160k/kg",
+    "price": 160000,
+    "category": "cha-gio",
+    "emoji": "🥩",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "cha-lua-bo",
+    "name": "Chả lụa bò",
+    "description": "Chả lụa bò dai ngon, đậm đà hương vị, 280k/kg",
+    "price": 280000,
+    "category": "cha-gio",
+    "emoji": "🥩",
+    "badge": "Bán chạy",
+    "active": true
+  },
+  {
+    "id": "cha-quyet-deo",
+    "name": "Chả quyết dẻo",
+    "description": "Chả quyết dẻo dai, thơm ngon, 140k/kg",
+    "price": 140000,
+    "category": "cha-gio",
+    "emoji": "🥩",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "cha-da-heo-ot",
+    "name": "Chả da heo ớt xiêm xanh",
+    "description": "Chả da heo ớt xiêm xanh cay nồng, đậm đà, 160k/kg",
+    "price": 160000,
+    "category": "cha-da",
+    "emoji": "🌶️",
+    "badge": "Mới",
+    "active": true
+  },
+  {
+    "id": "cha-da-binh-dan",
+    "name": "Chả da (bình dân)",
+    "description": "Chả da bình dân giá rẻ, thơm ngon, 110k/kg",
+    "price": 110000,
+    "category": "cha-da",
+    "emoji": "🌶️",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "cha-da-bo-ot",
+    "name": "Chả da bò ớt xiêm xanh",
+    "description": "Chả da bò ớt xiêm xanh cay nồng, hấp dẫn, 150k/kg",
+    "price": 150000,
+    "category": "cha-da",
+    "emoji": "🌶️",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "xuc-xich-bo",
+    "name": "Xúc xích bò",
+    "description": "Xúc xích bò đậm đà, thơm ngon, 100k/5 lạng",
+    "price": 100000,
+    "category": "xuc-xich",
+    "emoji": "🌭",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "xuc-xich-heo",
+    "name": "Xúc xích heo",
+    "description": "Xúc xích heo truyền thống, giòn ngọt, 90k/5 lạng",
+    "price": 90000,
+    "category": "xuc-xich",
+    "emoji": "🌭",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "lap-xuong",
+    "name": "Lạp xưởng",
+    "description": "Lạp xưởng khô đậm vị, thơm lừng, 90k/5 lạng",
+    "price": 90000,
+    "category": "xuc-xich",
+    "emoji": "🌭",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "nem-lui",
+    "name": "Nem lụi",
+    "description": "Nem lụi nướng than hoa thơm lừng, 6k/1 cái",
+    "price": 6000,
+    "category": "nuong",
+    "emoji": "🔥",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "cha-tam-nuong",
+    "name": "Chả tấm nướng",
+    "description": "Chả tấm nướng thơm lừng, thịt tươi ngon, 160k/kg",
+    "price": 160000,
+    "category": "nuong",
+    "emoji": "🔥",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "my-quang-vang",
+    "name": "Mì Quảng sợi vàng",
+    "description": "Sợi mì Quảng vàng dai ngon, đậm đà, 15k/kg",
+    "price": 15000,
+    "category": "pho",
+    "emoji": "🍜",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "my-quang-trang",
+    "name": "Mì Quảng sợi trắng",
+    "description": "Sợi mì Quảng trắng mềm, thanh ngọt, 15k/kg",
+    "price": 15000,
+    "category": "pho",
+    "emoji": "🍜",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "pho-soi-nam-dinh",
+    "name": "Phở sợi Nam Định",
+    "description": "Phở sợi Nam Định dai mềm, đậm đà hương vị truyền thống, 15k/kg",
+    "price": 15000,
+    "category": "pho",
+    "emoji": "🍜",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "pho-soi-ha-noi",
+    "name": "Phở sợi Hà Nội",
+    "description": "Phở sợi Hà Nội mềm mịn, thơm ngon, 15k/kg",
+    "price": 15000,
+    "category": "pho",
+    "emoji": "🍜",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "pho-tam-cuon",
+    "name": "Phở tấm cuộn",
+    "description": "Phở tấm cuộn tiện lợi, thơm ngon, 14k/kg",
+    "price": 14000,
+    "category": "pho",
+    "emoji": "🍜",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "banh-chung",
+    "name": "Bánh chưng",
+    "description": "Bánh chưng truyền thống, gạo nếp dẻo thơm, 40k/bánh",
+    "price": 40000,
+    "category": "banh",
+    "emoji": "🏕️",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "banh-tet",
+    "name": "Bánh tét",
+    "description": "Bánh tét Nam Bộ đậm đà, nếp dẻo nhân thơm, 40k/cái",
+    "price": 40000,
+    "category": "banh",
+    "emoji": "🏕️",
+    "badge": "",
+    "active": true
+  },
+  {
+    "id": "banh-bot-loc",
+    "name": "Bánh bột lọc",
+    "description": "Bánh bột lọc Huế trong suốt, nhân tôm thịt, 2k/cái",
+    "price": 2000,
+    "category": "banh",
+    "emoji": "🏕️",
+    "badge": "Giá rẻ",
+    "active": true
+  }
+]
